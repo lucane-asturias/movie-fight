@@ -1,18 +1,24 @@
 import axios from 'axios'
 
-// const journalApi = axios.create({
-//   baseURL: 'https://vue-journal-188fb-default-rtdb.firebaseio.com'
-// })
-
-const fetchData = async () => {
+export const fetchData = async (searchTerm) => {
   const response = await axios.get('http://www.omdbapi.com/', {
     params: {
       apikey: '3486c1a5',
-      s: 'avengers'
+      s: searchTerm
     }
   })
 
   console.log('response.data', response.data)
 }
 
-export default fetchData
+export const debounce = (func, delay = 1000) => {
+  let timeoutId
+  return (...args) => {
+    // console.log('args', args) e.target.value
+    if (timeoutId) clearTimeout(timeoutId)
+
+    timeoutId = setTimeout(() => {
+      func.apply(null, args) 
+    }, delay)
+  }
+}
