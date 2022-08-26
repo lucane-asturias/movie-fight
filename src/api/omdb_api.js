@@ -8,7 +8,10 @@ export const fetchData = async (searchTerm) => {
     }
   })
 
+  if (response.data.Error) return []
+
   console.log('response.data', response.data)
+  return response.data.Search
 }
 
 export const debounce = (func, delay = 1000) => {

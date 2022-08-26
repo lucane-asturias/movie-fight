@@ -1,7 +1,7 @@
 <template>
   <Header />
   <div class="container">
-    <input type="text">
+    <div class="autocomplete"></div>
   </div>
 </template>
 
@@ -12,9 +12,47 @@
   import { fetchData, debounce } from './api/omdb_api'
 
   onMounted(() => {
+    const autocompleteDiv = document.querySelector('.autocomplete') 
+    autocompleteDiv.innerHTML = `
+      <label><b>Search for a movie</b></label>
+      <input class="input" />
+      <div class="dropdown">
+        <div class="dropdown-menu">
+          <div class="dropdown-content results"></div>
+        </div>
+      </div>
+    `
+
     const input = document.querySelector('input')
-    const onInput = e => fetchData(e.target.value) 
+    const dropdown = document.querySelector('.dropdown')
+    const resultsWraper = document.querySelector('.results')
+
+    const onInput = async e => { 
+      const movies = await fetchData(e.target.value) 
+      console.log('movies', movies)
+      resultsWraper.innerHTML = ''
+
+      dropdown.classList.add('is-active')
+      for (let movie of movies) {
+        const option = document.createElement('a')
+        const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster
+
+        option.classList.add('dropdown-item')
+        option.innerHTML = `
+          <img src="${imgSrc}" />
+          ${movie.Title}
+        `
+
+        resultsWraper.appendChild(option)
+      }
+    }
     input.addEventListener('input', debounce(onInput, 3000))
+
+    document.addEventListener('click', e => {
+      if (!autocompleteDiv.contains(event.target)) {
+        dropdown.classList.remove('is-active')
+      }
+    })
   })
 
 // http://www.omdbapi.com/?apikey=3486c1a5&s=avengers
@@ -22,8 +60,8 @@
 </script>
 
 <style>
-  html {
+  /*html {
     background-color: black;
     color: white;
-  }
+  }*/
 </style>
