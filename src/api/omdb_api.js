@@ -25,3 +25,14 @@ export const debounce = (func, delay = 1000) => {
     }, delay)
   }
 }
+
+export const onMovieSelect = async (movie) => {
+  const response = await axios.get('http://www.omdbapi.com/', {
+    params: {
+      apikey: '3486c1a5',
+      i: movie.imdbID
+    }
+  })
+
+  console.log('response.data', response.data)  
+}

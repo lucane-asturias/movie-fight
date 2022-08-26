@@ -9,7 +9,7 @@
   import { onMounted } from 'vue'
 
   import Header from './components/Header.vue'
-  import { fetchData, debounce } from './api/omdb_api'
+  import { fetchData, debounce, onMovieSelect } from './api/omdb_api'
 
   onMounted(() => {
     const autocompleteDiv = document.querySelector('.autocomplete') 
@@ -28,8 +28,14 @@
     const resultsWraper = document.querySelector('.results')
 
     const onInput = async e => { 
-      const movies = await fetchData(e.target.value) 
+      const movies = await fetchData(e.target.value)
       console.log('movies', movies)
+
+      if (!movies.length) {
+        dropdown.classList.remove('is-active')
+        return
+      }
+
       resultsWraper.innerHTML = ''
 
       dropdown.classList.add('is-active')
@@ -42,6 +48,12 @@
           <img src="${imgSrc}" />
           ${movie.Title}
         `
+
+        option.addEventListener('click', () => {
+          dropdown.classList.remove('is-active')
+          input.value = movie.Title
+          onMovieSelect(movie)
+        })
 
         resultsWraper.appendChild(option)
       }
