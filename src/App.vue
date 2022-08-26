@@ -2,6 +2,7 @@
   <Header />
   <div class="container">
     <div class="autocomplete"></div>
+    <div id="summary"></div>
   </div>
 </template>
 
