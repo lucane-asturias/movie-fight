@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-export const fetchData = async (searchTerm) => {
-  const response = await axios.get('http://www.omdbapi.com/', {
+export const fetchData = async (endpoint, searchTerm = null) => {
+  const response = await axios.get(endpoint, {
     params: {
       apikey: '3486c1a5',
       s: searchTerm
@@ -14,19 +14,7 @@ export const fetchData = async (searchTerm) => {
   return response.data.Search
 }
 
-export const debounce = (func, delay = 1000) => {
-  let timeoutId
-  return (...args) => {
-    // console.log('args', args) e.target.value
-    if (timeoutId) clearTimeout(timeoutId)
-
-    timeoutId = setTimeout(() => {
-      func.apply(null, args) 
-    }, delay)
-  }
-}
-
-export const onMovieSelect = async (movie) => {
+export const onMovieSelect = async (movie, summaryElement) => {
   const response = await axios.get('http://www.omdbapi.com/', {
     params: {
       apikey: '3486c1a5',
@@ -35,7 +23,7 @@ export const onMovieSelect = async (movie) => {
   })
 
   console.log('response.data', response.data)
-  document.querySelector('#summary').innerHTML = movieTemplate(response.data)
+  summaryElement.innerHTML = movieTemplate(response.data)
 }
 
 const movieTemplate = (movieDetail) => {
@@ -63,7 +51,7 @@ const movieTemplate = (movieDetail) => {
         <p class="title">${movieDetail.BoxOffice}</p>
         <p class="subtitle">BoxOffice</p>
     </article>
-    <article class="notification is-primary">
+    <article  class="notification is-primary">
         <p class="title">${movieDetail.Metascore}</p>
         <p class="subtitle">Metascore</p>
     </article>

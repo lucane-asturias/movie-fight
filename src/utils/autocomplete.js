@@ -1,8 +1,8 @@
-import { fetchData, debounce, onMovieSelect } from '../api/omdb_api'
+import { debounce } from './debounce.js'
 
-export const createAutoComplete = ({ autocompleteDiv }) => {
+export const createAutoComplete = ({ autocompleteDiv, renderOption, onOptionSelect, inputValue, fetchApi }) => {
   autocompleteDiv.innerHTML = `
-    <label><b>Search for a movie</b></label>
+    <label><b>Search</b></label>
     <input class="input" />
     <div class="dropdown">
       <div class="dropdown-menu">
@@ -16,31 +16,28 @@ export const createAutoComplete = ({ autocompleteDiv }) => {
   const resultsWraper = autocompleteDiv.querySelector('.results')
 
   const onInput = async e => { 
-    const movies = await fetchData(e.target.value)
-    console.log('movies', movies)
+    const omdbEndpoint = 'http://www.omdbapi.com/'
+    const items = await fetchApi(omdbEndpoint, e.target.value)
+    console.log('items', items)
 
-    if (!movies.length) {
+    if (!items.length) {
       dropdown.classList.remove('is-active')
       return
     }
 
     resultsWraper.innerHTML = ''
-
     dropdown.classList.add('is-active')
-    for (let movie of movies) {
-      const option = document.createElement('a')
-      const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster
 
+    for (let item of items) {
+      const option = document.createElement('a')
       option.classList.add('dropdown-item')
-      option.innerHTML = `
-        <img src="${imgSrc}" />
-        ${movie.Title}
-      `
+
+      option.innerHTML = renderOption(item)
 
       option.addEventListener('click', () => {
         dropdown.classList.remove('is-active')
-        input.value = movie.Title
-        onMovieSelect(movie)
+        input.value = inputValue(item)
+        onOptionSelect(item)
       })
 
       resultsWraper.appendChild(option)
